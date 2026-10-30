@@ -24,6 +24,8 @@ app.use(cors({
 }));
 app.use(express.json());
 
+const asyncRoute = handler => (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
+
 app.get('/api/health', async (_req, res) => {
   try {
     await pool.query('SELECT 1');
@@ -198,7 +200,7 @@ app.post('/api/appointments', requireAuth, async (req, res) => {
   }
 });
 
-app.patch('/api/appointments/:id/reschedule', requireAuth, async (req, res) => {
+app.patch('/api/appointments/:id/reschedule', requireAuth, asyncRoute(async (req, res) => {
   const id = Number(req.params.id);
   const appointment_date = String(req.body.appointment_date ?? '');
   const appointment_time = String(req.body.appointment_time ?? '');
@@ -247,9 +249,9 @@ app.patch('/api/appointments/:id/reschedule', requireAuth, async (req, res) => {
     }
     res.status(500).json({ error: 'No fue posible reprogramar la cita.' });
   }
-});
+}));
 
-app.patch('/api/appointments/:id/cancel', requireAuth, async (req, res) => {
+app.patch('/api/appointments/:id/cancel', requireAuth, asyncRoute(async (req, res) => {
   const id = Number(req.params.id);
 
   const current = await pool.query(
@@ -274,7 +276,7 @@ app.patch('/api/appointments/:id/cancel', requireAuth, async (req, res) => {
   );
 
   res.json({ appointment: result.rows[0] });
-});
+}));
 
 app.get('/api/admin/appointments', requireAuth, requireAdmin, async (_req, res) => {
   try {
@@ -299,7 +301,7 @@ app.get('/api/admin/appointments', requireAuth, requireAdmin, async (_req, res) 
   }
 });
 
-app.patch('/api/admin/appointments/:id/status', requireAuth, requireAdmin, async (req, res) => {
+app.patch('/api/admin/appointments/:id/status', requireAuth, requireAdmin, asyncRoute(async (req, res) => {
   const id = Number(req.params.id);
   const newStatus = String(req.body.status ?? '');
 
@@ -335,7 +337,7 @@ app.patch('/api/admin/appointments/:id/status', requireAuth, requireAdmin, async
   );
 
   res.json({ appointment: updated.rows[0] });
-});
+}));
 
 app.use((_req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada.' });
