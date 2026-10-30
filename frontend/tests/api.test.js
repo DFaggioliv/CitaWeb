@@ -10,3 +10,24 @@ test('permite encabezados específicos de una solicitud',async()=>{fetchMock.moc
 test('expone mensaje de rechazo de la API',async()=>{fetchMock.mockResolvedValue(reply({error:'Ese horario ya está ocupado.'},false));await expect(api('/appointments')).rejects.toThrow('Ese horario ya está ocupado.');});
 test('usa mensaje genérico cuando el error no tiene JSON',async()=>{fetchMock.mockResolvedValue({ok:false,json:vi.fn().mockRejectedValue(new SyntaxError('invalid JSON'))});await expect(api('/appointments')).rejects.toThrow('Ocurrió un error inesperado.');});
 test('propaga fallo de red para que la interfaz pueda manejarlo',async()=>{fetchMock.mockRejectedValue(new Error('Sin conexión'));await expect(api('/slots')).rejects.toThrow('Sin conexión');});
+
+
+test.each(['https://example.invalid/steal', '//example.invalid/steal', '/appointments/../auth/login', '/appointments/1/unknown', '/slots?redirect=https://example.invalid'])('rechaza ruta no permitida antes de enviar el token: %s', async path => {
+  storage.getItem.mockReturnValue('private-test-token');
+  await expect(api(path)).rejects.toThrow('Ruta de API no permitida.');
+  expect(fetchMock).not.toHaveBeenCalled();
+});
+test.each(['/appointments/42/cancel', '/appointments/42/reschedule', '/admin/appointments/42/status'])('conserva ruta de cita autorizada %s', async path => {
+ fetchMock.mockResolvedValue(reply({})); await api(path); expect(fetchMock.mock.calls[0][0]).toMatch(new RegExp(path+'$'));
+});
+test('rechaza inyección de query en la fecha antes de enviar una solicitud',async()=>{
+ await expect(api('/slots?date=2026-11-02%26redirect%3Dexternal')).rejects.toThrow('Ruta de API no permitida.');
+ expect(fetchMock).not.toHaveBeenCalled();
+});
+test('reconstruye una fecha con formato permitido',async()=>{
+ fetchMock.mockResolvedValue(reply({}));await api('/slots?date=2026-11-02');
+ expect(fetchMock.mock.calls[0][0]).toMatch(/\/slots\?date=2026-11-02$/);
+});
+test.each(['/appointments/0/cancel','/admin/appointments/0/status','/appointments/999999999999999999999/reschedule','/admin/appointments/999999999999999999999/status'])('rechaza identificador no válido %s',async path=>{
+ await expect(api(path)).rejects.toThrow('Ruta de API no permitida.');expect(fetchMock).not.toHaveBeenCalled();
+});

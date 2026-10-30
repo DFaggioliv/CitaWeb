@@ -17,6 +17,7 @@ import {
 dotenv.config();
 
 const app = express();
+app.disable('x-powered-by');
 
 app.use(cors({
   origin: process.env.FRONTEND_URL?.split(',').map(v => v.trim()) || '*'
