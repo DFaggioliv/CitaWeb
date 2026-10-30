@@ -14,11 +14,11 @@ beforeEach(() => {
   vi.stubEnv('GITHUB_REF_NAME', 'QA');
   execFileSync.mockReturnValue('identical-tree');
   gate = 'OK';
-  runs = [{ path: '.github/workflows/quality.yml', conclusion: 'success', id: 123, pull_requests: [{ number: 7 }] }];
+  runs = [{ path: '.github/workflows/quality.yml', event: 'pull_request', conclusion: 'success', id: 123, head_sha: head, head_branch: 'feature', head_repository: { id: 1388245490 }, pull_requests: [] }];
   vi.stubGlobal('fetch', vi.fn(async url => {
     const target = String(url);
     const body = target.includes('/pulls?')
-      ? [{ merged_at: '2026-10-30', base: { ref: 'QA' }, merge_commit_sha: sha, head: { sha: head }, number: 7 }]
+      ? [{ merged_at: '2026-10-30', base: { ref: 'QA' }, merge_commit_sha: sha, head: { sha: head, ref: 'feature', repo: { id: 1388245490 } }, number: 7 }]
       : target.includes('/actions/runs?') ? { workflow_runs: runs } : { projectStatus: { status: gate } };
     return { ok: true, json: async () => body };
   }));
@@ -45,4 +45,8 @@ it('bloquea un quality gate rechazado', async () => {
 it('bloquea consultas fallidas al proveedor', async () => {
   fetch.mockResolvedValueOnce({ ok: false, status: 403 });
   await expect(import('../../scripts/verify-promoted-sonar.mjs')).rejects.toThrow('HTTP 403');
+});
+it('bloquea una ejecución de otra rama aunque use la misma revisión', async () => {
+  runs[0].head_branch = 'other';
+  await expect(import('../../scripts/verify-promoted-sonar.mjs')).rejects.toThrow('ejecución aprobada');
 });
