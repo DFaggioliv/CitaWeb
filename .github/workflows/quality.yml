@@ -164,6 +164,8 @@ jobs:
         run: node scripts/check-deploy-config.mjs
       - name: Desplegar backend y esperar confirmacion
         env:
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
           RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
           BACKEND_HEALTH_URL: ${{ vars.BACKEND_HEALTH_URL }}

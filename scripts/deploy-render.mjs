@@ -1,5 +1,8 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { setTimeout as delay } from 'node:timers/promises';
+import { assertDeploymentTarget } from './deployment-target.mjs';
+
+assertDeploymentTarget(process.env);
 
 const hook = new URL(process.env.RENDER_DEPLOY_HOOK_URL || '');
 if (hook.protocol !== 'https:' || hook.hostname !== 'api.render.com' || !hook.pathname.startsWith('/deploy/srv-')) {
@@ -22,6 +25,7 @@ for (let attempt = 0; attempt < 80; attempt++) {
   });
   if (!status.ok) throw new Error(`No se pudo consultar Render: HTTP ${status.status}.`);
   const deploy = await status.json();
+  if (deploy.commit?.id !== process.env.GITHUB_SHA) throw new Error('Render no identifica el commit exacto aprobado.');
   console.log(`Render ${deployId}: ${deploy.status}`);
   if (deploy.status === 'live') {
     live = true;
