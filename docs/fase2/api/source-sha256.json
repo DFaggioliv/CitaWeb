@@ -1,0 +1,6 @@
+{
+  "tests/api/CitaWeb.postman_collection.json": "a6a4bd786265cf2009a9212ec74a8012c4545c6107889ee5aec6e85ff18c1c30",
+  "scripts/run-api-local.mjs": "00d95cecfa0e25e8302fbb4638d201529dc036f3b9d461cbd0bce1ade2de33ab",
+  "backend/src/app.js": "9c8c296796d5c6fd64f722cd6e8e79f31281bbcec6528bfe2db358d32736c0f0",
+  "backend/sql/init.sql": "3bef9821063ba0801f0f74f3b403bf51d1d6eee14553c4b67af113c11ecfd590"
+}
