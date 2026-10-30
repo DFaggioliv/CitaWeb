@@ -5,7 +5,9 @@ const projectKey = process.env.SONAR_PROJECT_KEY;
 if (!projectKey || !process.env.SONAR_TOKEN) throw new Error('Falta configuracion Sonar para exportar evidencia.');
 const scope = process.env.GITHUB_EVENT_NAME === 'pull_request'
   ? { pullRequest: String(JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8')).number) }
-  : { branch: process.env.GITHUB_REF_NAME };
+  : process.env.GITHUB_REF_NAME === 'main'
+    ? { branch: 'main' }
+    : { pullRequest: String(JSON.parse(readFileSync('artifacts/sonar-promotion.json', 'utf8')).pullRequest) };
 async function get(path, params) {
   const url = new URL(path, host);
   for (const [key, value] of Object.entries(params)) if (value) url.searchParams.set(key, value);
