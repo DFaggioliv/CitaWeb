@@ -15,17 +15,27 @@ function safeApiPath(path) {
   if (pathname === '/slots') {
     const search = new URLSearchParams(query);
     if ([...search.keys()].some(key => key !== 'date')) throw new Error('Ruta de API no permitida.');
-    return search.has('date') ? `/slots?date=${encodeURIComponent(search.get('date'))}` : '/slots';
+    if (!search.has('date')) return '/slots';
+    const date = search.get('date');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('Ruta de API no permitida.');
+    const [year, month, day] = date.split('-').map(Number);
+    return `/slots?date=${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   }
   if (query) throw new Error('Ruta de API no permitida.');
   if (Object.hasOwn(fixed, pathname)) return fixed[pathname];
   const appointment = /^\/appointments\/(\d+)\/(cancel|reschedule)$/.exec(pathname);
   if (appointment) {
+    const id = Number(appointment[1]);
+    if (!Number.isSafeInteger(id) || id < 1) throw new Error('Ruta de API no permitida.');
     const action = appointment[2] === 'cancel' ? 'cancel' : 'reschedule';
-    return `/appointments/${encodeURIComponent(appointment[1])}/${action}`;
+    return `/appointments/${id}/${action}`;
   }
   const admin = /^\/admin\/appointments\/(\d+)\/status$/.exec(pathname);
-  if (admin) return `/admin/appointments/${encodeURIComponent(admin[1])}/status`;
+  if (admin) {
+    const id = Number(admin[1]);
+    if (!Number.isSafeInteger(id) || id < 1) throw new Error('Ruta de API no permitida.');
+    return `/admin/appointments/${id}/status`;
+  }
   throw new Error('Ruta de API no permitida.');
 }
 

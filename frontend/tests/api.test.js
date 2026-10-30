@@ -20,7 +20,14 @@ test.each(['https://example.invalid/steal', '//example.invalid/steal', '/appoint
 test.each(['/appointments/42/cancel', '/appointments/42/reschedule', '/admin/appointments/42/status'])('conserva ruta de cita autorizada %s', async path => {
  fetchMock.mockResolvedValue(reply({})); await api(path); expect(fetchMock.mock.calls[0][0]).toMatch(new RegExp(path+'$'));
 });
-test('codifica el valor de fecha sin permitir inyectar otra query',async()=>{
- fetchMock.mockResolvedValue(reply({})); await api('/slots?date=2026-11-02%26redirect%3Dexternal');
- expect(fetchMock.mock.calls[0][0]).toContain('?date=2026-11-02%26redirect%3Dexternal');
+test('rechaza inyección de query en la fecha antes de enviar una solicitud',async()=>{
+ await expect(api('/slots?date=2026-11-02%26redirect%3Dexternal')).rejects.toThrow('Ruta de API no permitida.');
+ expect(fetchMock).not.toHaveBeenCalled();
+});
+test('reconstruye una fecha con formato permitido',async()=>{
+ fetchMock.mockResolvedValue(reply({}));await api('/slots?date=2026-11-02');
+ expect(fetchMock.mock.calls[0][0]).toMatch(/\/slots\?date=2026-11-02$/);
+});
+test.each(['/appointments/0/cancel','/admin/appointments/0/status','/appointments/999999999999999999999/reschedule','/admin/appointments/999999999999999999999/status'])('rechaza identificador no válido %s',async path=>{
+ await expect(api(path)).rejects.toThrow('Ruta de API no permitida.');expect(fetchMock).not.toHaveBeenCalled();
 });

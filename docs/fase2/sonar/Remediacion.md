@@ -15,3 +15,10 @@ Validación local: 79 pruebas aprobadas (62 backend y 17 frontend), 0 fallidas. 
 Frontend compilado tras los cambios. La API real de PostgreSQL se validó antes de estas remediaciones en GitHub Actions, ejecución 41129652697, intento 2: gate Sonar PASSED y 23 solicitudes/69 aserciones aprobadas. El nuevo commit deberá volver a validar Sonar y la colección API para confirmar que la remediación no introduce regresiones.
 
 Esta tabla describe correcciones implementadas; la resolución efectiva de cada hallazgo la debe confirmar el análisis posterior de Sonar. No se marca un hallazgo como resuelto por modificar su severidad ni desactivar reglas.
+
+
+## Refuerzo de saneamiento de rutas
+
+La ejecución 41132388750 sobre 4c77b8a9b3a7b782408ded7ba4c7a7fb85d1443b rechazó el gate por S8476: Sonar seguía considerando contaminado un identificador reconstruido con encodeURIComponent. La cobertura nueva sí pasó con 80.3 % y duplicación nueva 0 %. Se reforzó la validación convirtiendo los identificadores a enteros seguros positivos y reconstruyendo la fecha desde sus componentes numéricos. No se suprimió la regla ni se relajó el gate.
+
+Después del refuerzo: 84 pruebas locales aprobadas (62 backend y 22 frontend), 0 fallidas; cobertura de líneas 157/348 = 45.11 %. Frontend compilado correctamente. Los reportes previos de 79 casos se conservan como evidencia intermedia y no representan esta ejecución final. El siguiente análisis CI debe confirmar el resultado del nuevo código.
