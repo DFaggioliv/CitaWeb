@@ -113,3 +113,8 @@ La carpeta `docs/` incluye:
 - prompt utilizado para generar la aplicación con IA.
 
 Estos documentos servirán como base para E1, E2, E3 y E4 del proyecto.
+
+
+## Fase 2: pruebas unitarias
+
+Desde la raíz: `npm ci --prefix backend`, `npm test`, `npm run test:coverage`. Consulte `docs/fase2/pruebas/Resultados_y_mocks.md` y `docs/fase2/Linea_base_cobertura.md`.

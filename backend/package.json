@@ -15,5 +15,12 @@
     "express": "^4.21.1",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "5.0.5",
+    "newman": "6.2.3",
+    "pg-mem": "3.0.14",
+    "vitest": "5.0.5",
+    "yaml": "2.9.1"
   }
 }
