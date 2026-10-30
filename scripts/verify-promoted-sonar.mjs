@@ -19,7 +19,10 @@ const currentTree = execFileSync('git', ['rev-parse', `${sha}^{tree}`], { encodi
 const headTree = execFileSync('git', ['rev-parse', `${pr.head.sha}^{tree}`], { encoding: 'utf8' }).trim();
 if (currentTree !== headTree) throw new Error('El contenido integrado difiere del PR analizado.');
 const runs = await github(`actions/runs?head_sha=${pr.head.sha}&event=pull_request&per_page=100`);
-const approved = runs.workflow_runs.find(run => run.path === '.github/workflows/quality.yml' && run.conclusion === 'success' && run.pull_requests.some(item => item.number === pr.number));
+const approved = runs.workflow_runs.find(run => run.path === '.github/workflows/quality.yml'
+  && run.event === 'pull_request' && run.conclusion === 'success'
+  && run.head_sha === pr.head.sha && run.head_branch === pr.head.ref
+  && run.head_repository?.id === pr.head.repo.id);
 if (!approved) throw new Error('No existe ejecución aprobada del pipeline para el PR y su revisión exacta.');
 const url = new URL('https://sonarcloud.io/api/qualitygates/project_status');
 url.searchParams.set('projectKey', 'DFaggioliv_CitaWeb');
