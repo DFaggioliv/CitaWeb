@@ -1,0 +1,183 @@
+name: CitaWeb - calidad y despliegue
+
+on:
+  push:
+    branches: [DEV, QA, PROD, main]
+  pull_request: {}
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: citaweb-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  quality:
+    name: ${{ github.event_name != 'pull_request' && github.ref_name == 'DEV' && 'Calidad CitaWeb DEV' || 'Calidad CitaWeb' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: ${{ (github.base_ref || github.ref_name) == 'main' && 'PROD' || (github.base_ref || github.ref_name) == 'PROD' && 'PROD' || (github.base_ref || github.ref_name) == 'QA' && 'QA' || 'DEV' }}
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: citaweb_ci
+          POSTGRES_USER: citaweb_ci
+          POSTGRES_PASSWORD: ci-disposable-password
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U citaweb_ci -d citaweb_ci"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      DATABASE_URL: postgresql://citaweb_ci:ci-disposable-password@127.0.0.1:5432/citaweb_ci
+      API_BASE_URL: http://127.0.0.1:3000/api
+      API_ADMIN_EMAIL: qa-admin@example.invalid
+      API_ADMIN_PASSWORD: ci-disposable-admin-password
+      JWT_SECRET: ci-disposable-jwt-secret-not-production
+      NODE_ENV: test
+      PORT: '3000'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+      - name: Instalar dependencias reproducibles
+        run: |
+          npm ci --prefix backend
+          npm ci --prefix frontend
+      - name: Compilar frontend y verificar sintaxis backend
+        env:
+          NODE_ENV: production
+          VITE_API_URL: ${{ vars.VITE_API_URL || (github.event_name == 'pull_request' && 'http://127.0.0.1:3000/api') }}
+        run: |
+          test -n "$VITE_API_URL" || { echo 'Falta VITE_API_URL del ambiente.'; exit 1; }
+          find backend/src -name '*.js' -exec node --check {} \;
+          npm run build --prefix frontend
+      - name: Unitarias y cobertura
+        run: |
+          npm run test:coverage -- --coverage.reportsDirectory=coverage/ci --reporter=json --outputFile=coverage/ci-tests.json
+          node scripts/check-coverage.mjs
+      - name: Verificar configuracion Sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_ORGANIZATION: dfaggioliv
+          SONAR_PROJECT_KEY: DFaggioliv_CitaWeb
+        run: |
+          test -n "$SONAR_TOKEN" || { echo 'Falta SONAR_TOKEN.'; exit 1; }
+          test -n "$SONAR_ORGANIZATION" || { echo 'Falta SONAR_ORGANIZATION.'; exit 1; }
+          test -n "$SONAR_PROJECT_KEY" || { echo 'Falta SONAR_PROJECT_KEY.'; exit 1; }
+      - name: Analisis Sonar y espera del quality gate
+        id: sonar
+        uses: SonarSource/sonarqube-scan-action@v8.3.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL || 'https://sonarcloud.io' }}
+        with:
+          args: >-
+            -Dsonar.organization=dfaggioliv
+            -Dsonar.projectKey=DFaggioliv_CitaWeb
+      - name: Exportar evidencia Sonar incluso si el gate falla
+        if: always() && steps.sonar.outcome != 'skipped'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PROJECT_KEY: DFaggioliv_CitaWeb
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL || 'https://sonarcloud.io' }}
+        run: node scripts/export-sonar.mjs
+      - name: Preparar PostgreSQL de prueba
+        run: node scripts/init-api-ci.mjs
+      - name: API automatizada contra PostgreSQL real
+        run: |
+          node backend/src/server.js > api-server.log 2>&1 &
+          API_PID=$!
+          trap 'kill "$API_PID" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent "$API_BASE_URL/health" > /dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent "$API_BASE_URL/health" > /dev/null
+          node scripts/run-api-ci.mjs
+      - name: Conservar frontend compilado
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: frontend-${{ github.sha }}
+          path: frontend/dist/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Conservar evidencia de calidad
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: calidad-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            coverage/ci/
+            coverage/ci-tests.json
+            artifacts/
+            .scannerwork/report-task.txt
+            api-server.log
+          if-no-files-found: warn
+          retention-days: 30
+
+  deploy:
+    name: Despliegue CitaWeb
+    needs: quality
+    if: github.event_name != 'pull_request' && contains(fromJSON('["DEV","QA","PROD","main"]'), github.ref_name)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: ${{ github.ref_name == 'main' && 'PROD' || github.ref_name == 'PROD' && 'PROD' || github.ref_name == 'QA' && 'QA' || 'DEV' }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-${{ github.sha }}
+          path: frontend/dist/
+      - name: Verificar configuracion del despliegue
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          BACKEND_HEALTH_URL: ${{ vars.BACKEND_HEALTH_URL }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: node scripts/check-deploy-config.mjs
+      - name: Desplegar backend y esperar confirmacion
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          BACKEND_HEALTH_URL: ${{ vars.BACKEND_HEALTH_URL }}
+        run: node scripts/deploy-render.mjs
+      - name: Preparar artefacto estatico de Vercel
+        run: node scripts/package-vercel.mjs
+      - name: Publicar frontend compilado en el proyecto del ambiente
+        working-directory: frontend
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: npx --yes vercel@65.8.0 deploy --prebuilt --prod --yes > ../frontend-deployment-url.txt
+      - name: Comprobar frontend publicado
+        run: |
+          FRONTEND_URL=$(cat frontend-deployment-url.txt)
+          curl --fail --retry 5 --retry-delay 5 --silent "$FRONTEND_URL" > /dev/null
+      - name: Conservar evidencia del despliegue
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: despliegue-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            artifacts/render-deploy.json
+            frontend-deployment-url.txt
+          if-no-files-found: warn
+          retention-days: 30

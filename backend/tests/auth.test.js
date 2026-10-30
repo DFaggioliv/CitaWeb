@@ -1,0 +1,14 @@
+import jwt from 'jsonwebtoken';
+import { signToken, requireAuth, requireAdmin } from '../src/auth.js';
+const secret='test-only-secret-not-for-production';
+const user={id:7,email:'test@example.com',role:'user'};
+const response=()=>({status:vi.fn().mockReturnThis(),json:vi.fn().mockReturnThis()});
+beforeEach(()=>vi.stubEnv('JWT_SECRET',secret));
+test('token emitido contiene identidad y expira en ocho horas',()=>{const payload=jwt.verify(signToken(user),secret);expect(payload).toMatchObject(user);expect(payload.exp-payload.iat).toBe(8*3600);});
+test('sin token responde 401 y no continúa',()=>{const res=response(),next=vi.fn();requireAuth({headers:{}},res,next);expect(res.status).toHaveBeenCalledWith(401);expect(next).not.toHaveBeenCalled();});
+test('token corrupto responde 401',()=>{const res=response();requireAuth({headers:{authorization:'Bearer corrupto'}},res,vi.fn());expect(res.status).toHaveBeenCalledWith(401);});
+test('token expirado responde 401',()=>{const res=response();const token=jwt.sign(user,secret,{expiresIn:-1});requireAuth({headers:{authorization:`Bearer ${token}`}},res,vi.fn());expect(res.status).toHaveBeenCalledWith(401);});
+test('token válido asigna usuario y continúa',()=>{const req={headers:{authorization:`Bearer ${signToken(user)}`}},next=vi.fn(),res=response();requireAuth(req,res,next);expect(req.user).toMatchObject(user);expect(next).toHaveBeenCalledOnce();expect(res.status).not.toHaveBeenCalled();});
+test('usuario común no accede como administrador',()=>{const res=response(),next=vi.fn();requireAdmin({user},res,next);expect(res.status).toHaveBeenCalledWith(403);expect(next).not.toHaveBeenCalled();});
+test('administrador continúa al recurso protegido',()=>{const next=vi.fn();requireAdmin({user:{role:'admin'}},response(),next);expect(next).toHaveBeenCalledOnce();});
+test('sin identidad se rechaza acceso administrativo',()=>{const res=response();requireAdmin({},res,vi.fn());expect(res.status).toHaveBeenCalledWith(403);});

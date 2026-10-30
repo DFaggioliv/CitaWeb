@@ -1,0 +1,98 @@
+{
+  "capturedAt": "2026-10-30T21:14:01.579488+00:00",
+  "source": "Public SonarQube Cloud API; main branch before Phase 2 merge",
+  "component": {
+    "component": {
+      "organization": "dfaggioliv",
+      "key": "DFaggioliv_CitaWeb",
+      "name": "CitaWeb",
+      "qualifier": "TRK",
+      "analysisDate": "2026-10-30T21:10:00+0000",
+      "tags": [],
+      "visibility": "public",
+      "version": "not provided"
+    },
+    "ancestors": []
+  },
+  "measures": {
+    "component": {
+      "id": "AaGOpc1iIiCpczltyb3j",
+      "key": "DFaggioliv_CitaWeb",
+      "name": "CitaWeb",
+      "qualifier": "TRK",
+      "measures": [
+        {
+          "metric": "bugs",
+          "value": "4",
+          "bestValue": false
+        },
+        {
+          "metric": "duplicated_lines_density",
+          "value": "0.0",
+          "bestValue": true
+        },
+        {
+          "metric": "code_smells",
+          "value": "1",
+          "bestValue": false
+        },
+        {
+          "metric": "vulnerabilities",
+          "value": "2",
+          "bestValue": false
+        },
+        {
+          "metric": "sqale_index",
+          "value": "20",
+          "bestValue": false
+        }
+      ]
+    }
+  },
+  "gate": {
+    "projectStatus": {
+      "status": "NONE",
+      "conditions": [],
+      "periods": []
+    }
+  },
+  "issues": {
+    "total": 0,
+    "p": 1,
+    "ps": 100,
+    "paging": {
+      "pageIndex": 1,
+      "pageSize": 100,
+      "total": 0
+    },
+    "effortTotal": 0,
+    "debtTotal": 0,
+    "issues": [],
+    "components": [],
+    "organizations": [],
+    "facets": []
+  },
+  "analyses": {
+    "paging": {
+      "pageIndex": 1,
+      "pageSize": 10,
+      "total": 1
+    },
+    "analyses": [
+      {
+        "key": "cba560bd-5493-4389-9cc0-c5dc6952acf0",
+        "date": "2026-10-30T21:10:00+0000",
+        "events": [
+          {
+            "key": "AaGOpsJaq8wOaMrNkSxg",
+            "category": "VERSION",
+            "name": "not provided"
+          }
+        ],
+        "projectVersion": "not provided",
+        "manualNewCodePeriodBaseline": false,
+        "revision": "addbcaa10645c35cf92caebae286b34ae72fb2e2"
+      }
+    ]
+  }
+}

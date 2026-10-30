@@ -3,7 +3,13 @@ export function normalizeEmail(email = '') {
 }
 
 export function isValidEmail(email = '') {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const value = String(email);
+  if (/\s/.test(value)) return false;
+  const parts = value.split('@');
+  if (parts.length !== 2 || !parts[0]) return false;
+  const domain = parts[1];
+  const dot = domain.lastIndexOf('.');
+  return dot > 0 && dot < domain.length - 1;
 }
 
 export function getTodayGuatemala() {

@@ -1,0 +1,12 @@
+{
+  "runId": 41129652697,
+  "attempt": 2,
+  "sourceCommit": "29d1b8f19117b22edba240908497e575daa7b281",
+  "url": "https://github.com/DFaggioliv/CitaWeb/actions/runs/41129652697",
+  "qualityGate": "PASSED",
+  "apiRequests": 23,
+  "apiAssertions": 69,
+  "apiFailures": 0,
+  "database": "real PostgreSQL 16 disposable service",
+  "deploy": "skipped: pull request"
+}
