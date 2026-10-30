@@ -8,6 +8,8 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
+  actions: read
 
 concurrency:
   group: citaweb-${{ github.ref }}
@@ -76,6 +78,7 @@ jobs:
           test -n "$SONAR_PROJECT_KEY" || { echo 'Falta SONAR_PROJECT_KEY.'; exit 1; }
       - name: Analisis Sonar y espera del quality gate
         id: sonar
+        if: github.event_name == 'pull_request' || github.ref_name == 'main'
         uses: SonarSource/sonarqube-scan-action@v8.3.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -84,8 +87,15 @@ jobs:
           args: >-
             -Dsonar.organization=dfaggioliv
             -Dsonar.projectKey=DFaggioliv_CitaWeb
+      - name: Verificar Sonar del PR integrado con contenido identico
+        id: promoted_sonar
+        if: github.event_name != 'pull_request' && github.ref_name != 'main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: node scripts/verify-promoted-sonar.mjs
       - name: Exportar evidencia Sonar incluso si el gate falla
-        if: always() && steps.sonar.outcome != 'skipped'
+        if: always() && (steps.sonar.outcome != 'skipped' || steps.promoted_sonar.outcome == 'success')
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_PROJECT_KEY: DFaggioliv_CitaWeb
