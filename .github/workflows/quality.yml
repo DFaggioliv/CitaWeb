@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Calidad CitaWeb
+    name: ${{ github.event_name != 'pull_request' && github.ref_name == 'DEV' && 'Calidad CitaWeb DEV' || 'Calidad CitaWeb' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     environment: ${{ (github.base_ref || github.ref_name) == 'main' && 'PROD' || (github.base_ref || github.ref_name) == 'PROD' && 'PROD' || (github.base_ref || github.ref_name) == 'QA' && 'QA' || 'DEV' }}
@@ -166,7 +166,7 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
-        run: npx --yes vercel@65.8.0 deploy --prebuilt --prod --yes --token="$VERCEL_TOKEN" > ../frontend-deployment-url.txt
+        run: npx --yes vercel@65.8.0 deploy --prebuilt --prod --yes > ../frontend-deployment-url.txt
       - name: Comprobar frontend publicado
         run: |
           FRONTEND_URL=$(cat frontend-deployment-url.txt)
