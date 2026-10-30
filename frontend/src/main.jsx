@@ -128,7 +128,7 @@ function AuthScreen({ onLogin }) {
           </label>
 
           {message && <div className="alert error">{message}</div>}
-          <button disabled={busy}>{busy ? 'Procesando…' : mode === 'login' ? 'Ingresar' : 'Crear cuenta'}</button>
+          <button type="submit" disabled={busy}>{busy ? 'Procesando…' : mode === 'login' ? 'Ingresar' : 'Crear cuenta'}</button>
         </form>
       </section>
     </div>
@@ -155,7 +155,7 @@ function UserDashboard() {
     }
   }
 
-  useEffect(() => { refresh(); }, []);
+  useEffect(() => { void refresh(); }, []);
 
   async function loadSlots(date) {
     setBooking(prev => ({ ...prev, appointment_date: date, appointment_time: '' }));
@@ -283,7 +283,7 @@ function UserDashboard() {
           )}
 
           <div className="actions wide">
-            <button>{rescheduleId ? 'Guardar reprogramación' : 'Crear cita'}</button>
+            <button type="submit">{rescheduleId ? 'Guardar reprogramación' : 'Crear cita'}</button>
             {rescheduleId && (
               <button
                 type="button"
@@ -329,7 +329,7 @@ function AdminDashboard() {
     }
   }
 
-  useEffect(() => { refresh(); }, []);
+  useEffect(() => { void refresh(); }, []);
 
   async function changeStatus(id, status) {
     try {

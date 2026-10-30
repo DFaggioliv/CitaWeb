@@ -20,3 +20,7 @@ test('rechaza formato de fecha incorrecto', () => expect(validateAppointment({..
 test.each([10,200])('acepta motivo con longitud límite %i', n => expect(validateAppointment({...valid,reason:'a'.repeat(n)})).toEqual([]));
 test.each([9,201])('rechaza motivo fuera de límites %i', n => expect(validateAppointment({...valid,reason:'a'.repeat(n)}).join(' ')).toContain('10 y 200'));
 test('no cuenta espacios exteriores como parte del motivo', () => expect(validateAppointment({...valid,reason:'   abc   '}).join(' ')).toContain('10 y 200'));
+
+
+test.each(['a b@example.com', 'a@@example.com', '@example.com', 'a@example.', 'a@.com', 'a@example'])('rechaza estructura de correo inválida %s',email=>expect(isValidEmail(email)).toBe(false));
+test('correo extenso sin separador se rechaza sin retroceso de regex',()=>expect(isValidEmail('a'.repeat(100000))).toBe(false));
