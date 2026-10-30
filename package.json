@@ -5,6 +5,7 @@
   "scripts": {
     "test": "node backend/node_modules/vitest/vitest.mjs run --config vitest.config.mjs",
     "test:coverage": "npm test -- --coverage",
-    "test:baseline": "node scripts/run-baseline.mjs"
+    "test:baseline": "node scripts/run-baseline.mjs",
+    "test:api:local": "node scripts/run-api-local.mjs"
   }
 }

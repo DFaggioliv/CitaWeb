@@ -1,0 +1,862 @@
+{
+  "info": {
+    "name": "CitaWeb - Fase 2 - API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "23 solicitudes encadenadas con aserciones HTTP, esquema y contenido. Usar solo en QA aislado; crea cuentas y citas de prueba."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:3000/api"
+    },
+    {
+      "key": "adminEmail",
+      "value": ""
+    },
+    {
+      "key": "adminPassword",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.collectionVariables.get('runEmail')) {",
+          " const date = new Date(Date.now() - 6*60*60*1000);",
+          " date.setUTCDate(date.getUTCDate()+1);",
+          " while ([0,6].includes(date.getUTCDay())) date.setUTCDate(date.getUTCDate()+1);",
+          " pm.collectionVariables.set('testDate',date.toISOString().slice(0,10));",
+          " pm.collectionVariables.set('runEmail',`qa-${Date.now()}@example.invalid`);",
+          " pm.collectionVariables.set('runPassword','QA-only-password-2026');",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Salud del servicio",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/health"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"ok\", \"service\"], \"properties\": {\"ok\": {\"type\": \"boolean\"}, \"service\": {\"type\": \"string\"}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.ok).to.equal(true); pm.expect(responseBody.service).to.equal('CitaWeb API'); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Registro válido",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"Usuario API QA\", \"email\": \"{{runEmail}}\", \"password\": \"{{runPassword}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"token\", \"user\"], \"properties\": {\"token\": {\"type\": \"string\", \"minLength\": 1}, \"user\": {\"type\": \"object\", \"required\": [\"id\", \"name\", \"email\", \"role\"]}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.user.email).to.equal(pm.collectionVariables.get('runEmail')); pm.expect(responseBody.user.role).to.equal('user'); });",
+              "pm.collectionVariables.set('userToken', responseBody.token); pm.collectionVariables.set('userId', responseBody.user.id);",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Registro duplicado",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"Usuario API QA\", \"email\": \"{{runEmail}}\", \"password\": \"{{runPassword}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 409', () => pm.response.to.have.status(409));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"error\"], \"properties\": {\"error\": {\"type\": \"string\", \"minLength\": 1}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.error).to.include('Ya existe'); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Nombre fuera de límite",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"AB\", \"email\": \"{{runEmail}}\", \"password\": \"{{runPassword}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 400', () => pm.response.to.have.status(400));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"error\"], \"properties\": {\"error\": {\"type\": \"string\", \"minLength\": 1}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.error).to.include('nombre'); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Credenciales incorrectas",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"{{runEmail}}\", \"password\": \"incorrecta\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 401', () => pm.response.to.have.status(401));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"error\"], \"properties\": {\"error\": {\"type\": \"string\", \"minLength\": 1}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.error).to.include('Credenciales'); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Inicio de sesión válido",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"{{runEmail}}\", \"password\": \"{{runPassword}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"token\", \"user\"], \"properties\": {\"token\": {\"type\": \"string\", \"minLength\": 1}, \"user\": {\"type\": \"object\", \"required\": [\"id\", \"name\", \"email\", \"role\"]}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.user.id).to.equal(Number(pm.collectionVariables.get('userId'))); });",
+              "pm.collectionVariables.set('userToken', responseBody.token);",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Perfil autenticado",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/me"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"user\"], \"properties\": {\"user\": {\"type\": \"object\", \"required\": [\"id\", \"email\", \"role\"]}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.user.email).to.equal(pm.collectionVariables.get('runEmail')); pm.expect(responseBody.user.role).to.equal('user'); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Recurso sin autenticación",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/appointments"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 401', () => pm.response.to.have.status(401));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"error\"], \"properties\": {\"error\": {\"type\": \"string\", \"minLength\": 1}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.error).to.include('Autenticación'); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 - Usuario común sin permiso admin",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/appointments"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 403', () => pm.response.to.have.status(403));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"error\"], \"properties\": {\"error\": {\"type\": \"string\", \"minLength\": 1}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.error).to.include('administradores'); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 - Disponibilidad de fecha hábil",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/slots?date={{testDate}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"date\", \"available\"], \"properties\": {\"date\": {\"type\": \"string\"}, \"available\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.date).to.equal(pm.collectionVariables.get('testDate')); pm.expect(responseBody.available.length).to.be.at.least(2); });",
+              "pm.collectionVariables.set('slot1',responseBody.available[0]); pm.collectionVariables.set('slot2',responseBody.available[1]);",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 - Crear cita pendiente",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/appointments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"appointment_date\": \"{{testDate}}\", \"appointment_time\": \"{{slot1}}\", \"reason\": \"Consulta automatizada de QA\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"appointment\"], \"properties\": {\"appointment\": {\"type\": \"object\", \"required\": [\"id\", \"status\"], \"properties\": {\"id\": {\"type\": \"integer\"}, \"status\": {\"enum\": [\"pending\", \"confirmed\", \"attended\", \"cancelled\"]}}}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.appointment.status).to.equal('pending'); pm.expect(responseBody.appointment.appointment_time).to.equal(pm.collectionVariables.get('slot1')); });",
+              "pm.collectionVariables.set('appointmentId',responseBody.appointment.id);",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 - Rechazar horario ocupado",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/appointments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"appointment_date\": \"{{testDate}}\", \"appointment_time\": \"{{slot1}}\", \"reason\": \"Consulta automatizada de QA\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 409', () => pm.response.to.have.status(409));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"error\"], \"properties\": {\"error\": {\"type\": \"string\", \"minLength\": 1}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.error).to.include('ocupado'); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 - Listar citas propias",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/appointments"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"appointments\"], \"properties\": {\"appointments\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"status\"]}}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.appointments.some(a=>a.id===Number(pm.collectionVariables.get('appointmentId')))).to.equal(true); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "14 - Reprogramar cita pendiente",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/appointments/{{appointmentId}}/reschedule",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"appointment_date\": \"{{testDate}}\", \"appointment_time\": \"{{slot2}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"appointment\"], \"properties\": {\"appointment\": {\"type\": \"object\", \"required\": [\"id\", \"status\"], \"properties\": {\"id\": {\"type\": \"integer\"}, \"status\": {\"enum\": [\"pending\", \"confirmed\", \"attended\", \"cancelled\"]}}}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.appointment.appointment_time).to.equal(pm.collectionVariables.get('slot2')); pm.expect(responseBody.appointment.status).to.equal('pending'); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "15 - Inicio de sesión administrativo",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"{{adminEmail}}\", \"password\": \"{{adminPassword}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"token\", \"user\"], \"properties\": {\"token\": {\"type\": \"string\", \"minLength\": 1}, \"user\": {\"type\": \"object\", \"required\": [\"id\", \"name\", \"email\", \"role\"]}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.user.role).to.equal('admin'); });",
+              "pm.collectionVariables.set('adminToken',responseBody.token);",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "16 - Listado global administrativo",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/appointments"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"appointments\"], \"properties\": {\"appointments\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"status\"]}}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.appointments.some(a=>a.id===Number(pm.collectionVariables.get('appointmentId')))).to.equal(true); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "17 - Confirmar cita pendiente",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/appointments/{{appointmentId}}/status",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"status\": \"confirmed\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"appointment\"], \"properties\": {\"appointment\": {\"type\": \"object\", \"required\": [\"id\", \"status\"], \"properties\": {\"id\": {\"type\": \"integer\"}, \"status\": {\"enum\": [\"pending\", \"confirmed\", \"attended\", \"cancelled\"]}}}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.appointment.status).to.equal('confirmed'); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "18 - Rechazar reprogramación confirmada",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/appointments/{{appointmentId}}/reschedule",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"appointment_date\": \"{{testDate}}\", \"appointment_time\": \"{{slot1}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 409', () => pm.response.to.have.status(409));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"error\"], \"properties\": {\"error\": {\"type\": \"string\", \"minLength\": 1}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.error).to.include('pendientes'); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "19 - Marcar cita atendida",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/appointments/{{appointmentId}}/status",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"status\": \"attended\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"appointment\"], \"properties\": {\"appointment\": {\"type\": \"object\", \"required\": [\"id\", \"status\"], \"properties\": {\"id\": {\"type\": \"integer\"}, \"status\": {\"enum\": [\"pending\", \"confirmed\", \"attended\", \"cancelled\"]}}}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.appointment.status).to.equal('attended'); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "20 - Rechazar reactivación de cita final",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/appointments/{{appointmentId}}/status",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"status\": \"pending\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 409', () => pm.response.to.have.status(409));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"error\"], \"properties\": {\"error\": {\"type\": \"string\", \"minLength\": 1}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.error).to.include('Transición inválida'); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "21 - Crear segunda cita para cancelar",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/appointments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"appointment_date\": \"{{testDate}}\", \"appointment_time\": \"{{slot1}}\", \"reason\": \"Consulta automatizada de QA\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"appointment\"], \"properties\": {\"appointment\": {\"type\": \"object\", \"required\": [\"id\", \"status\"], \"properties\": {\"id\": {\"type\": \"integer\"}, \"status\": {\"enum\": [\"pending\", \"confirmed\", \"attended\", \"cancelled\"]}}}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.appointment.status).to.equal('pending'); });",
+              "pm.collectionVariables.set('cancelId',responseBody.appointment.id);",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "22 - Cancelar cita propia pendiente",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/appointments/{{cancelId}}/cancel"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"appointment\"], \"properties\": {\"appointment\": {\"type\": \"object\", \"required\": [\"id\", \"status\"], \"properties\": {\"id\": {\"type\": \"integer\"}, \"status\": {\"enum\": [\"pending\", \"confirmed\", \"attended\", \"cancelled\"]}}}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.appointment.status).to.equal('cancelled'); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "23 - Rechazar cancelación repetida",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/appointments/{{cancelId}}/cancel"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "(() => {",
+              "pm.test('Código HTTP 409', () => pm.response.to.have.status(409));",
+              "pm.test('Esquema de respuesta', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"error\"], \"properties\": {\"error\": {\"type\": \"string\", \"minLength\": 1}}}));",
+              "const responseBody = pm.response.json();",
+              "pm.test('Contenido de negocio esperado', () => { pm.expect(responseBody.error).to.include('ya no puede'); });",
+              "})();"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,519 @@
+{
+  "measuredAt": "2026-10-30T17:55:55.888Z",
+  "environment": "Local HTTP API with pg-mem (simulated PostgreSQL; no Neon connection).",
+  "versions": {
+    "node": "v24.21.0",
+    "newman": "6.2.3",
+    "pgMem": "3.0.14"
+  },
+  "stats": {
+    "iterations": {
+      "total": 1,
+      "pending": 0,
+      "failed": 0
+    },
+    "items": {
+      "total": 23,
+      "pending": 0,
+      "failed": 0
+    },
+    "scripts": {
+      "total": 46,
+      "pending": 0,
+      "failed": 0
+    },
+    "prerequests": {
+      "total": 23,
+      "pending": 0,
+      "failed": 0
+    },
+    "requests": {
+      "total": 23,
+      "pending": 0,
+      "failed": 0
+    },
+    "tests": {
+      "total": 23,
+      "pending": 0,
+      "failed": 0
+    },
+    "assertions": {
+      "total": 69,
+      "pending": 0,
+      "failed": 0
+    },
+    "testScripts": {
+      "total": 23,
+      "pending": 0,
+      "failed": 0
+    },
+    "prerequestScripts": {
+      "total": 23,
+      "pending": 0,
+      "failed": 0
+    }
+  },
+  "failures": [],
+  "executions": [
+    {
+      "name": "01 - Salud del servicio",
+      "method": "GET",
+      "statusCode": 200,
+      "responseTimeMs": 35,
+      "assertions": [
+        {
+          "name": "Código HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "02 - Registro válido",
+      "method": "POST",
+      "statusCode": 201,
+      "responseTimeMs": 146,
+      "assertions": [
+        {
+          "name": "Código HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "03 - Registro duplicado",
+      "method": "POST",
+      "statusCode": 409,
+      "responseTimeMs": 4,
+      "assertions": [
+        {
+          "name": "Código HTTP 409",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "04 - Nombre fuera de límite",
+      "method": "POST",
+      "statusCode": 400,
+      "responseTimeMs": 3,
+      "assertions": [
+        {
+          "name": "Código HTTP 400",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "05 - Credenciales incorrectas",
+      "method": "POST",
+      "statusCode": 401,
+      "responseTimeMs": 91,
+      "assertions": [
+        {
+          "name": "Código HTTP 401",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "06 - Inicio de sesión válido",
+      "method": "POST",
+      "statusCode": 200,
+      "responseTimeMs": 80,
+      "assertions": [
+        {
+          "name": "Código HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "07 - Perfil autenticado",
+      "method": "GET",
+      "statusCode": 200,
+      "responseTimeMs": 8,
+      "assertions": [
+        {
+          "name": "Código HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "08 - Recurso sin autenticación",
+      "method": "GET",
+      "statusCode": 401,
+      "responseTimeMs": 2,
+      "assertions": [
+        {
+          "name": "Código HTTP 401",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "09 - Usuario común sin permiso admin",
+      "method": "GET",
+      "statusCode": 403,
+      "responseTimeMs": 5,
+      "assertions": [
+        {
+          "name": "Código HTTP 403",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "10 - Disponibilidad de fecha hábil",
+      "method": "GET",
+      "statusCode": 200,
+      "responseTimeMs": 19,
+      "assertions": [
+        {
+          "name": "Código HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "11 - Crear cita pendiente",
+      "method": "POST",
+      "statusCode": 201,
+      "responseTimeMs": 12,
+      "assertions": [
+        {
+          "name": "Código HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "12 - Rechazar horario ocupado",
+      "method": "POST",
+      "statusCode": 409,
+      "responseTimeMs": 5,
+      "assertions": [
+        {
+          "name": "Código HTTP 409",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "13 - Listar citas propias",
+      "method": "GET",
+      "statusCode": 200,
+      "responseTimeMs": 7,
+      "assertions": [
+        {
+          "name": "Código HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "14 - Reprogramar cita pendiente",
+      "method": "PATCH",
+      "statusCode": 200,
+      "responseTimeMs": 15,
+      "assertions": [
+        {
+          "name": "Código HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "15 - Inicio de sesión administrativo",
+      "method": "POST",
+      "statusCode": 200,
+      "responseTimeMs": 84,
+      "assertions": [
+        {
+          "name": "Código HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "16 - Listado global administrativo",
+      "method": "GET",
+      "statusCode": 200,
+      "responseTimeMs": 12,
+      "assertions": [
+        {
+          "name": "Código HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "17 - Confirmar cita pendiente",
+      "method": "PATCH",
+      "statusCode": 200,
+      "responseTimeMs": 6,
+      "assertions": [
+        {
+          "name": "Código HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "18 - Rechazar reprogramación confirmada",
+      "method": "PATCH",
+      "statusCode": 409,
+      "responseTimeMs": 4,
+      "assertions": [
+        {
+          "name": "Código HTTP 409",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "19 - Marcar cita atendida",
+      "method": "PATCH",
+      "statusCode": 200,
+      "responseTimeMs": 6,
+      "assertions": [
+        {
+          "name": "Código HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "20 - Rechazar reactivación de cita final",
+      "method": "PATCH",
+      "statusCode": 409,
+      "responseTimeMs": 3,
+      "assertions": [
+        {
+          "name": "Código HTTP 409",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "21 - Crear segunda cita para cancelar",
+      "method": "POST",
+      "statusCode": 201,
+      "responseTimeMs": 4,
+      "assertions": [
+        {
+          "name": "Código HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "22 - Cancelar cita propia pendiente",
+      "method": "PATCH",
+      "statusCode": 200,
+      "responseTimeMs": 9,
+      "assertions": [
+        {
+          "name": "Código HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "23 - Rechazar cancelación repetida",
+      "method": "PATCH",
+      "statusCode": 409,
+      "responseTimeMs": 3,
+      "assertions": [
+        {
+          "name": "Código HTTP 409",
+          "passed": true
+        },
+        {
+          "name": "Esquema de respuesta",
+          "passed": true
+        },
+        {
+          "name": "Contenido de negocio esperado",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}
