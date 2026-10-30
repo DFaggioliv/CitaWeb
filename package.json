@@ -1,0 +1,10 @@
+{
+  "name": "citaweb-quality",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node backend/node_modules/vitest/vitest.mjs run --config vitest.config.mjs",
+    "test:coverage": "npm test -- --coverage",
+    "test:baseline": "node scripts/run-baseline.mjs"
+  }
+}

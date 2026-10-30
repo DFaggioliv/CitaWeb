@@ -1,0 +1,12 @@
+import { api } from '../src/api.js';
+let fetchMock,storage;
+beforeEach(()=>{fetchMock=vi.fn();storage={getItem:vi.fn().mockReturnValue(null)};vi.stubGlobal('fetch',fetchMock);vi.stubGlobal('localStorage',storage);});
+const reply=(data,ok=true)=>({ok,json:vi.fn().mockResolvedValue(data)});
+test('devuelve contenido JSON de una respuesta correcta',async()=>{fetchMock.mockResolvedValue(reply({available:['08:00']}));expect(await api('/slots')).toEqual({available:['08:00']});});
+test('envía token almacenado en Authorization',async()=>{storage.getItem.mockReturnValue('test-token');fetchMock.mockResolvedValue(reply({}));await api('/appointments');expect(storage.getItem).toHaveBeenCalledWith('token');expect(fetchMock.mock.calls[0][1].headers.Authorization).toBe('Bearer test-token');});
+test('no envía Authorization si no existe sesión',async()=>{fetchMock.mockResolvedValue(reply({}));await api('/slots');expect(fetchMock.mock.calls[0][1].headers).not.toHaveProperty('Authorization');});
+test('conserva método y cuerpo al crear una cita',async()=>{fetchMock.mockResolvedValue(reply({}));const body=JSON.stringify({reason:'Consulta general'});await api('/appointments',{method:'POST',body});expect(fetchMock.mock.calls[0][1]).toMatchObject({method:'POST',body,headers:{'Content-Type':'application/json'}});});
+test('permite encabezados específicos de una solicitud',async()=>{fetchMock.mockResolvedValue(reply({}));await api('/appointments',{headers:{'X-Request-ID':'test-42'}});expect(fetchMock.mock.calls[0][1].headers['X-Request-ID']).toBe('test-42');});
+test('expone mensaje de rechazo de la API',async()=>{fetchMock.mockResolvedValue(reply({error:'Ese horario ya está ocupado.'},false));await expect(api('/appointments')).rejects.toThrow('Ese horario ya está ocupado.');});
+test('usa mensaje genérico cuando el error no tiene JSON',async()=>{fetchMock.mockResolvedValue({ok:false,json:vi.fn().mockRejectedValue(new SyntaxError('invalid JSON'))});await expect(api('/appointments')).rejects.toThrow('Ocurrió un error inesperado.');});
+test('propaga fallo de red para que la interfaz pueda manejarlo',async()=>{fetchMock.mockRejectedValue(new Error('Sin conexión'));await expect(api('/slots')).rejects.toThrow('Sin conexión');});

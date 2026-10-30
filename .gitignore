@@ -3,3 +3,11 @@ node_modules/
 dist/
 .vscode/
 .DS_Store
+coverage/current/
+coverage/ci/
+coverage/ci-tests.json
+artifacts/
+api-server.log
+.scannerwork/
+.vercel/
+frontend-deployment-url.txt

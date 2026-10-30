@@ -1,0 +1,31 @@
+
+ RUN  v5.0.5 C:/Users/Faggi/OneDrive/Documents/ChatGPT/Aseguramiento de la calidad/CitaWeb
+      Coverage enabled with v8
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  11:30:43
+   Duration  572ms (import 45%, worker 34%, transform 16%, tests 5%)
+
+ % Coverage report from v8
+--------------|---------|----------|---------|---------|-------------------
+File          | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+--------------|---------|----------|---------|---------|-------------------
+All files     |       0 |        0 |       0 |       0 |                   
+ backend/src  |       0 |        0 |       0 |       0 |                   
+  auth.js     |       0 |        0 |       0 |       0 | 4-31              
+  db.js       |       0 |      100 |     100 |       0 | 4-8               
+  server.js   |       0 |        0 |       0 |       0 | 17-350            
+  utils.js    |       0 |        0 |       0 |       0 | 2-87              
+ frontend/src |       0 |        0 |       0 |       0 |                   
+  api.js      |       0 |        0 |       0 |       0 | 1-21              
+  main.jsx    |       0 |        0 |       0 |       0 | 7-471             
+--------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 0% ( 0/327 )
+Branches     : 0% ( 0/180 )
+Functions    : 0% ( 0/81 )
+Lines        : 0% ( 0/313 )
+================================================================================
