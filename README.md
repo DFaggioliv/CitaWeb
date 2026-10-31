@@ -113,3 +113,28 @@ La carpeta `docs/` incluye:
 - prompt utilizado para generar la aplicación con IA.
 
 Estos documentos servirán como base para E1, E2, E3 y E4 del proyecto.
+
+
+## Fase 2: pruebas y cobertura
+
+Las herramientas de pruebas están fijadas en las dependencias de desarrollo del backend. Desde la raíz:
+
+```powershell
+npm.cmd ci --prefix backend
+npm.cmd run test:baseline
+npm.cmd test
+npm.cmd run test:coverage
+```
+
+La línea base es retrospectiva y el comando verifica que el código original permanezca intacto. Las suites de aplicación contienen 62 casos; el control de baseline no cuenta como prueba unitaria de negocio. Consulte `docs/fase2/Linea_base_cobertura.md`. Reportes iniciales en `coverage/baseline/index.html`; las ejecuciones posteriores usan `coverage/current/`.
+
+Resultados y justificación de mocks: `docs/fase2/pruebas/Resultados_y_mocks.md`. Cada ejecución de cobertura usa una carpeta `coverage/current/run-<marca-de-tiempo>/`.
+
+
+## Fase 2: pruebas de API
+
+```powershell
+npm.cmd run test:api:local
+```
+
+Ejecuta 23 solicitudes Postman con Newman contra HTTP local y PostgreSQL simulado en memoria. No utiliza Neon. Colección: `tests/api/CitaWeb.postman_collection.json`. Resultados, límites e instrucciones para QA real: `docs/fase2/api/Resultado_API.md`. La ejecución con PostgreSQL real y en CI queda pendiente.

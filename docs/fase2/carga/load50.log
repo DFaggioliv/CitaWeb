@@ -1,0 +1,27 @@
+{
+  "measuredAt": "2026-10-31T01:27:09.445Z",
+  "profile": "load50",
+  "baseUrl": "https://citaweb-api-qa.onrender.com/api",
+  "targetVUs": 50,
+  "scheduledHoldSeconds": 300,
+  "activeVUsObserved": 50,
+  "endpoints": {
+    "slots": {
+      "requests": 10729,
+      "throughput_requests_per_second": 31.338845684107802,
+      "average_ms": 247.15734279056826,
+      "p95_ms": 319.56534,
+      "error_rate": 0
+    },
+    "appointments": {
+      "requests": 10729,
+      "throughput_requests_per_second": 31.338845684107802,
+      "average_ms": 244.99629866716376,
+      "p95_ms": 294.39714000000004,
+      "error_rate": 0
+    }
+  },
+  "rnf01": {
+    "criterion": "Escenario adicional E14 de 50 VUs; RNF-01 se evalúa con rnf20."
+  }
+}

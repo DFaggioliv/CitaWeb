@@ -1,0 +1,485 @@
+{
+  "total": 7,
+  "p": 1,
+  "ps": 100,
+  "paging": {
+    "pageIndex": 1,
+    "pageSize": 100,
+    "total": 7
+  },
+  "effortTotal": 59,
+  "debtTotal": 59,
+  "issues": [
+    {
+      "key": "AaGOpsHoq8wOaMrNkSxa",
+      "rule": "javascript:S5689",
+      "severity": "MINOR",
+      "component": "DFaggioliv_CitaWeb:backend/src/server.js",
+      "project": "DFaggioliv_CitaWeb",
+      "line": 19,
+      "hash": "4af77bcf43147b78489dd9c4043bfe01",
+      "textRange": {
+        "startLine": 19,
+        "endLine": 19,
+        "startOffset": 6,
+        "endOffset": 9
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "This framework implicitly discloses version information by default. Make sure it is safe here.",
+      "effort": "5min",
+      "debt": "5min",
+      "assignee": "DFaggioliv-vbj2Z@github",
+      "tags": [
+        "cwe",
+        "express.js",
+        "former-hotspot"
+      ],
+      "creationDate": "2026-09-25T22:18:06+0000",
+      "updateDate": "2026-10-30T21:10:00+0000",
+      "type": "VULNERABILITY",
+      "organization": "dfaggioliv",
+      "cleanCodeAttribute": "TRUSTWORTHY",
+      "cleanCodeAttributeCategory": "RESPONSIBLE",
+      "impacts": [
+        {
+          "softwareQuality": "SECURITY",
+          "severity": "LOW"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "projectName": "CitaWeb",
+      "internalTags": [],
+      "lastChangeAnalysisUuid": "cba560bd-5493-4389-9cc0-c5dc6952acf0",
+      "lastChangeSource": "ANALYSIS"
+    },
+    {
+      "key": "AaGOpsGTq8wOaMrNkSxZ",
+      "rule": "javascript:S8786",
+      "severity": "MAJOR",
+      "component": "DFaggioliv_CitaWeb:backend/src/utils.js",
+      "project": "DFaggioliv_CitaWeb",
+      "line": 6,
+      "hash": "e6a05c6ab145fa806ffafe916aa3e5cb",
+      "textRange": {
+        "startLine": 6,
+        "endLine": 6,
+        "startOffset": 9,
+        "endOffset": 37
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "effort": "20min",
+      "debt": "20min",
+      "assignee": "DFaggioliv-vbj2Z@github",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "creationDate": "2026-09-25T22:18:06+0000",
+      "updateDate": "2026-10-30T21:10:00+0000",
+      "type": "CODE_SMELL",
+      "organization": "dfaggioliv",
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "projectName": "CitaWeb",
+      "internalTags": [],
+      "lastChangeAnalysisUuid": "cba560bd-5493-4389-9cc0-c5dc6952acf0",
+      "lastChangeSource": "ANALYSIS"
+    },
+    {
+      "key": "AaGOpsHtq8wOaMrNkSxf",
+      "rule": "jssecurity:S8476",
+      "severity": "MINOR",
+      "component": "DFaggioliv_CitaWeb:frontend/src/api.js",
+      "project": "DFaggioliv_CitaWeb",
+      "line": 6,
+      "hash": "6c74800761d8043f7a1699186a59e648",
+      "textRange": {
+        "startLine": 6,
+        "endLine": 6,
+        "startOffset": 25,
+        "endOffset": 30
+      },
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "DFaggioliv_CitaWeb:frontend/src/api.js",
+              "textRange": {
+                "startLine": 6,
+                "endLine": 6,
+                "startOffset": 25,
+                "endOffset": 30
+              },
+              "msg": "Sink: this invocation is not safe; a malicious value can be used as argument"
+            },
+            {
+              "component": "DFaggioliv_CitaWeb:frontend/src/api.js",
+              "textRange": {
+                "startLine": 6,
+                "endLine": 6,
+                "startOffset": 31,
+                "endOffset": 50
+              },
+              "msg": "This concatenation can propagate malicious content to the newly created string"
+            },
+            {
+              "component": "DFaggioliv_CitaWeb:frontend/src/api.js",
+              "textRange": {
+                "startLine": 6,
+                "endLine": 6,
+                "startOffset": 44,
+                "endOffset": 48
+              },
+              "msg": "A malicious value was previously assigned to field ‘path’"
+            },
+            {
+              "component": "DFaggioliv_CitaWeb:frontend/src/api.js",
+              "textRange": {
+                "startLine": 3,
+                "endLine": 3,
+                "startOffset": 26,
+                "endOffset": 30
+              },
+              "msg": "A malicious value can be assigned to field ‘path’"
+            },
+            {
+              "component": "DFaggioliv_CitaWeb:frontend/src/main.jsx",
+              "textRange": {
+                "startLine": 167,
+                "endLine": 167,
+                "startOffset": 25,
+                "endOffset": 28
+              },
+              "msg": "Function call: Control is passed to this function, which is on the path to a security sink"
+            },
+            {
+              "component": "DFaggioliv_CitaWeb:frontend/src/main.jsx",
+              "textRange": {
+                "startLine": 167,
+                "endLine": 167,
+                "startOffset": 29,
+                "endOffset": 70
+              },
+              "msg": "This concatenation can propagate malicious content to the newly created string"
+            },
+            {
+              "component": "DFaggioliv_CitaWeb:frontend/src/main.jsx",
+              "textRange": {
+                "startLine": 167,
+                "endLine": 167,
+                "startOffset": 63,
+                "endOffset": 67
+              },
+              "msg": "A malicious value was previously assigned to field ‘date’"
+            },
+            {
+              "component": "DFaggioliv_CitaWeb:frontend/src/main.jsx",
+              "textRange": {
+                "startLine": 160,
+                "endLine": 160,
+                "startOffset": 27,
+                "endOffset": 31
+              },
+              "msg": "A malicious value can be assigned to field ‘date’"
+            },
+            {
+              "component": "DFaggioliv_CitaWeb:frontend/src/main.jsx",
+              "textRange": {
+                "startLine": 256,
+                "endLine": 256,
+                "startOffset": 29,
+                "endOffset": 38
+              },
+              "msg": "Function call: Control is passed to this function, which is on the path to a security sink"
+            },
+            {
+              "component": "DFaggioliv_CitaWeb:frontend/src/main.jsx",
+              "textRange": {
+                "startLine": 256,
+                "endLine": 256,
+                "startOffset": 48,
+                "endOffset": 53
+              },
+              "msg": "A malicious value was previously assigned to field ‘value’"
+            },
+            {
+              "component": "DFaggioliv_CitaWeb:frontend/src/main.jsx",
+              "textRange": {
+                "startLine": 471,
+                "endLine": 471,
+                "startOffset": 44,
+                "endOffset": 50
+              },
+              "msg": "Enters the application through a browser UI event"
+            }
+          ]
+        }
+      ],
+      "status": "OPEN",
+      "message": "Client-Side Request Forgery via unsanitized user input",
+      "effort": "20min",
+      "debt": "20min",
+      "assignee": "DFaggioliv-vbj2Z@github",
+      "tags": [
+        "cwe"
+      ],
+      "creationDate": "2026-09-25T22:18:06+0000",
+      "updateDate": "2026-10-30T21:10:00+0000",
+      "type": "VULNERABILITY",
+      "organization": "dfaggioliv",
+      "cleanCodeAttribute": "TRUSTWORTHY",
+      "cleanCodeAttributeCategory": "RESPONSIBLE",
+      "impacts": [
+        {
+          "softwareQuality": "SECURITY",
+          "severity": "HIGH"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "projectName": "CitaWeb",
+      "internalTags": [],
+      "lastChangeAnalysisUuid": "cba560bd-5493-4389-9cc0-c5dc6952acf0",
+      "lastChangeSource": "ANALYSIS"
+    },
+    {
+      "key": "AaGOpsHsq8wOaMrNkSxb",
+      "rule": "javascript:S9011",
+      "severity": "MAJOR",
+      "component": "DFaggioliv_CitaWeb:frontend/src/main.jsx",
+      "project": "DFaggioliv_CitaWeb",
+      "line": 131,
+      "hash": "c900c61ba1094c39bc12e4f5987a0ff7",
+      "textRange": {
+        "startLine": 131,
+        "endLine": 131,
+        "startOffset": 10,
+        "endOffset": 114
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add an explicit \"type\" attribute to this button.",
+      "effort": "2min",
+      "debt": "2min",
+      "assignee": "DFaggioliv-vbj2Z@github",
+      "tags": [
+        "react",
+        "vue"
+      ],
+      "creationDate": "2026-09-25T22:18:06+0000",
+      "updateDate": "2026-10-30T21:10:00+0000",
+      "type": "BUG",
+      "organization": "dfaggioliv",
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "projectName": "CitaWeb",
+      "internalTags": [],
+      "lastChangeAnalysisUuid": "cba560bd-5493-4389-9cc0-c5dc6952acf0",
+      "lastChangeSource": "ANALYSIS"
+    },
+    {
+      "key": "AaGOpsHsq8wOaMrNkSxc",
+      "rule": "javascript:S9383",
+      "severity": "MAJOR",
+      "component": "DFaggioliv_CitaWeb:frontend/src/main.jsx",
+      "project": "DFaggioliv_CitaWeb",
+      "line": 158,
+      "hash": "3b621bd7bba4747d5a685a852c23c008",
+      "textRange": {
+        "startLine": 158,
+        "endLine": 158,
+        "startOffset": 20,
+        "endOffset": 30
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.",
+      "effort": "5min",
+      "debt": "5min",
+      "assignee": "DFaggioliv-vbj2Z@github",
+      "tags": [
+        "async",
+        "es2017",
+        "promise",
+        "type-dependent"
+      ],
+      "creationDate": "2026-09-25T22:18:06+0000",
+      "updateDate": "2026-10-30T21:10:00+0000",
+      "type": "BUG",
+      "organization": "dfaggioliv",
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "projectName": "CitaWeb",
+      "internalTags": [],
+      "lastChangeAnalysisUuid": "cba560bd-5493-4389-9cc0-c5dc6952acf0",
+      "lastChangeSource": "ANALYSIS"
+    },
+    {
+      "key": "AaGOpsHsq8wOaMrNkSxd",
+      "rule": "javascript:S9011",
+      "severity": "MAJOR",
+      "component": "DFaggioliv_CitaWeb:frontend/src/main.jsx",
+      "project": "DFaggioliv_CitaWeb",
+      "line": 286,
+      "hash": "ef1950f91618e3729c7b60fd117d44b5",
+      "textRange": {
+        "startLine": 286,
+        "endLine": 286,
+        "startOffset": 12,
+        "endOffset": 85
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Add an explicit \"type\" attribute to this button.",
+      "effort": "2min",
+      "debt": "2min",
+      "assignee": "DFaggioliv-vbj2Z@github",
+      "tags": [
+        "react",
+        "vue"
+      ],
+      "creationDate": "2026-09-25T22:18:06+0000",
+      "updateDate": "2026-10-30T21:10:00+0000",
+      "type": "BUG",
+      "organization": "dfaggioliv",
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "projectName": "CitaWeb",
+      "internalTags": [],
+      "lastChangeAnalysisUuid": "cba560bd-5493-4389-9cc0-c5dc6952acf0",
+      "lastChangeSource": "ANALYSIS"
+    },
+    {
+      "key": "AaGOpsHsq8wOaMrNkSxe",
+      "rule": "javascript:S9383",
+      "severity": "MAJOR",
+      "component": "DFaggioliv_CitaWeb:frontend/src/main.jsx",
+      "project": "DFaggioliv_CitaWeb",
+      "line": 332,
+      "hash": "3b621bd7bba4747d5a685a852c23c008",
+      "textRange": {
+        "startLine": 332,
+        "endLine": 332,
+        "startOffset": 20,
+        "endOffset": 30
+      },
+      "flows": [],
+      "status": "OPEN",
+      "message": "Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.",
+      "effort": "5min",
+      "debt": "5min",
+      "assignee": "DFaggioliv-vbj2Z@github",
+      "tags": [
+        "async",
+        "es2017",
+        "promise",
+        "type-dependent"
+      ],
+      "creationDate": "2026-09-25T22:18:06+0000",
+      "updateDate": "2026-10-30T21:10:00+0000",
+      "type": "BUG",
+      "organization": "dfaggioliv",
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "projectName": "CitaWeb",
+      "internalTags": [],
+      "lastChangeAnalysisUuid": "cba560bd-5493-4389-9cc0-c5dc6952acf0",
+      "lastChangeSource": "ANALYSIS"
+    }
+  ],
+  "components": [
+    {
+      "organization": "dfaggioliv",
+      "key": "DFaggioliv_CitaWeb:backend/src/utils.js",
+      "uuid": "AaGOpr8Eq8wOaMrNkSxO",
+      "enabled": true,
+      "qualifier": "FIL",
+      "name": "utils.js",
+      "longName": "backend/src/utils.js",
+      "path": "backend/src/utils.js"
+    },
+    {
+      "organization": "dfaggioliv",
+      "key": "DFaggioliv_CitaWeb:backend/src/server.js",
+      "uuid": "AaGOpr8Eq8wOaMrNkSxP",
+      "enabled": true,
+      "qualifier": "FIL",
+      "name": "server.js",
+      "longName": "backend/src/server.js",
+      "path": "backend/src/server.js"
+    },
+    {
+      "organization": "dfaggioliv",
+      "key": "DFaggioliv_CitaWeb:frontend/src/api.js",
+      "uuid": "AaGOpr8Eq8wOaMrNkSxV",
+      "enabled": true,
+      "qualifier": "FIL",
+      "name": "api.js",
+      "longName": "frontend/src/api.js",
+      "path": "frontend/src/api.js"
+    },
+    {
+      "organization": "dfaggioliv",
+      "key": "DFaggioliv_CitaWeb",
+      "uuid": "AaGOpc1iIiCpczltyb3j",
+      "enabled": true,
+      "qualifier": "TRK",
+      "name": "CitaWeb",
+      "longName": "CitaWeb"
+    },
+    {
+      "organization": "dfaggioliv",
+      "key": "DFaggioliv_CitaWeb:frontend/src/main.jsx",
+      "uuid": "AaGOpr8Eq8wOaMrNkSxU",
+      "enabled": true,
+      "qualifier": "FIL",
+      "name": "main.jsx",
+      "longName": "frontend/src/main.jsx",
+      "path": "frontend/src/main.jsx"
+    }
+  ],
+  "organizations": [
+    {
+      "key": "dfaggioliv",
+      "name": "DFaggioliv"
+    }
+  ],
+  "facets": []
+}

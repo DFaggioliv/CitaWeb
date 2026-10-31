@@ -1,0 +1,18 @@
+{
+  "capturedAt": "2026-10-30T17:45:19.624970+00:00",
+  "files": {
+    "backend/src/app.js": "9c8c296796d5c6fd64f722cd6e8e79f31281bbcec6528bfe2db358d32736c0f0",
+    "backend/src/auth.js": "12e8e3ef3dfcd521375ae79cd34b309103771c715d0af9a6e62682f8ff59cb9e",
+    "backend/src/db.js": "c1c25d07be7fbff826427cac6a88060182a1b3f0e3d0545d891c54fc7422fdaa",
+    "backend/src/seed-admin.js": "ce4837952b2dbf46c1b2cc4d08d1f4816a6ad937d2d115f62c62f60477925bb2",
+    "backend/src/server.js": "1ecd27f72ba6009cd4f5ad5cf4cb9eff2d44b313259a7618f2c7645e6ff07d4a",
+    "backend/src/utils.js": "e6b57203f404e02783e42e22df49e11493a852720eca4ca603a023df1ddab8d9",
+    "frontend/src/api.js": "4a25469b69e0d6b1bbccfe8920b50617bf5b468de6c5ea5531e113912479e839",
+    "frontend/src/main.jsx": "35bbe03d99a3b8e02d6c78e9c9d0fb3f9acf5c61d938e9f1614e46da31a4a81f",
+    "frontend/src/styles.css": "920b75cf52611a0e29a0d21eb23032f58766af846cc70338b98a7d4f95d1dbe6",
+    "backend/tests/appointments.test.js": "d45caf37f078ed940363f3910e6b8430a904104bb3b85b453c3b8ff29e2fb3ef",
+    "backend/tests/auth.test.js": "ad3d469339879b737e90e0ebad2c2e3bd79d8f0f6585ac2a49bba75f7e990a4f",
+    "backend/tests/utils.test.js": "1a9fc9970447eef0247365980b82e1b686011ddbd5795ff19cad8734e0e4934e",
+    "frontend/tests/api.test.js": "d50bcd40d48e466d2268c74c953d4ae33e41f0c26d5a0576cde8f6239eca0c5f"
+  }
+}
