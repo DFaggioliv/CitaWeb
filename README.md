@@ -1,140 +1,71 @@
 # CitaWeb
 
-Sistema web de gestión de citas preparado para el proyecto de **Aseguramiento de la Calidad de Software**.
+Aplicación de gestión de citas evaluada en Aseguramiento de la Calidad de Software. Monorepo con React/Vite en frontend, Express/Node.js 24 en backend, PostgreSQL en Neon y JWT con roles user/admin.
 
-## Arquitectura
+## Aplicación y evidencias
 
-- Frontend: React + Vite
-- Backend: Node.js + Express
-- Base de datos: PostgreSQL
-- Autenticación: JWT
-- Roles: `user` y `admin`
+- Producción: https://citaweb-iota.vercel.app
+- API salud: https://citaweb-api.onrender.com/api/health
+- QA: https://citaweb-qa-dfaggioliv.vercel.app
+- Sonar: https://sonarcloud.io/summary/overall?id=DFaggioliv_CitaWeb&branch=main
+- Pipeline productivo validado: https://github.com/DFaggioliv/CitaWeb/actions/runs/41163716026
+- Informe consolidado: [docs/fase2/Informe_final.md](docs/fase2/Informe_final.md)
 
-## Funcionalidades principales
+## Instalación y ejecución local
 
-### Usuario
-- Registro e inicio de sesión.
-- Consulta de horarios disponibles.
-- Creación de citas.
-- Reprogramación de citas pendientes.
-- Cancelación de citas pendientes o confirmadas.
-- Consulta del historial de citas.
-
-### Administrador
-- Inicio de sesión.
-- Consulta de todas las citas.
-- Confirmación de citas pendientes.
-- Marcado de citas confirmadas como atendidas.
-- Cancelación administrativa.
-
-## Reglas de negocio
-
-- Nombre: 3 a 50 caracteres.
-- Contraseña: 8 a 64 caracteres.
-- Motivo de la cita: 10 a 200 caracteres.
-- Las citas solo pueden programarse entre 1 y 30 días a futuro.
-- No se permiten citas sábado ni domingo.
-- Horarios válidos: 08:00 a 17:00, en intervalos de 30 minutos.
-- No se permiten dos citas activas para el mismo día y hora.
-- Solo las citas `pending` pueden reprogramarse.
-- Una cita `pending` puede pasar a `confirmed`.
-- Una cita `confirmed` puede pasar a `attended`.
-- Las citas `pending` o `confirmed` pueden pasar a `cancelled`.
-- Una cita `attended` o `cancelled` no puede volver a un estado anterior.
-
-## 1. Preparar PostgreSQL
-
-Cree una base de datos, por ejemplo `citaweb`, y ejecute:
-
-```sql
-backend/sql/init.sql
-```
-
-## 2. Backend
-
-```bash
-cd backend
-copy .env.example .env
-npm install
-npm run seed
-npm run dev
-```
-
-Edite `.env` antes de ejecutar `seed`.
-
-## 3. Frontend
-
-En otra terminal:
-
-```bash
-cd frontend
-copy .env.example .env
-npm install
-npm run dev
-```
-
-La aplicación abrirá normalmente en:
-
-- Frontend: http://localhost:5173
-- Backend: http://localhost:3000
-
-## Usuario administrador inicial
-
-Se crea con:
-
-```bash
-npm run seed
-```
-
-Las credenciales se toman de `ADMIN_EMAIL` y `ADMIN_PASSWORD` en el `.env` del backend.
-
-## Despliegue sugerido
-
-- Frontend: Vercel
-- Backend: Render
-- PostgreSQL: Neon
-
-Variables del backend:
-- `DATABASE_URL`
-- `JWT_SECRET`
-- `FRONTEND_URL`
-- `PORT`
-- `NODE_ENV`
-
-Variable del frontend:
-- `VITE_API_URL`
-
-## Nota académica
-
-La carpeta `docs/` incluye:
-- especificación funcional resumida,
-- reglas de negocio,
-- arquitectura de alto nivel,
-- prompt utilizado para generar la aplicación con IA.
-
-Estos documentos servirán como base para E1, E2, E3 y E4 del proyecto.
-
-
-## Fase 2: pruebas y cobertura
-
-Las herramientas de pruebas están fijadas en las dependencias de desarrollo del backend. Desde la raíz:
+Requiere Node.js 24 y PostgreSQL. Desde la raíz:
 
 ```powershell
-npm.cmd ci --prefix backend
-npm.cmd run test:baseline
-npm.cmd test
-npm.cmd run test:coverage
+npm ci --prefix backend
+npm ci --prefix frontend
+Copy-Item backend/.env.example backend/.env
+Copy-Item frontend/.env.example frontend/.env
 ```
 
-La línea base es retrospectiva y el comando verifica que el código original permanezca intacto. Las suites de aplicación contienen 62 casos; el control de baseline no cuenta como prueba unitaria de negocio. Consulte `docs/fase2/Linea_base_cobertura.md`. Reportes iniciales en `coverage/baseline/index.html`; las ejecuciones posteriores usan `coverage/current/`.
+Configurar backend/.env con DATABASE_URL local, JWT_SECRET propio, FRONTEND_URL=http://localhost:5173 y PORT=3000. Configurar frontend/.env con VITE_API_URL=http://localhost:3000/api. No publicar estos archivos ni usar datos productivos para pruebas. Crear una base vacía y ejecutar backend/sql/init.sql con el cliente PostgreSQL elegido.
 
-Resultados y justificación de mocks: `docs/fase2/pruebas/Resultados_y_mocks.md`. Cada ejecución de cobertura usa una carpeta `coverage/current/run-<marca-de-tiempo>/`.
-
-
-## Fase 2: pruebas de API
+En terminales separadas:
 
 ```powershell
-npm.cmd run test:api:local
+npm run dev --prefix backend
+npm run dev --prefix frontend
 ```
 
-Ejecuta 23 solicitudes Postman con Newman contra HTTP local y PostgreSQL simulado en memoria. No utiliza Neon. Colección: `tests/api/CitaWeb.postman_collection.json`. Resultados, límites e instrucciones para QA real: `docs/fase2/api/Resultado_API.md`. La ejecución con PostgreSQL real y en CI queda pendiente.
+Para crear un administrador solo en una base local o QA propia, configurar ADMIN_EMAIL/ADMIN_PASSWORD y ejecutar npm run seed --prefix backend. No ejecutar seed ni init contra producción por defecto.
+
+## Pruebas y compilación
+
+```powershell
+npm test
+npm run test:coverage
+npm run test:api:local
+npm run build --prefix frontend
+```
+
+La suite final tiene 133 casos: 111 backend/plataforma y 22 frontend. Vitest 5.0.5 y V8 miden líneas globales de aplicación: 223/349, 63.89 %. Incluye archivos sin cubrir. El informe explica alcance, mocks y limitaciones. Los reportes de 62, 84 y 123 pruebas son etapas históricas.
+
+La API local ejecuta 23 solicitudes y 69 aserciones con Newman sobre Express HTTP y pg-mem. CI usa PostgreSQL 16 real y efímero. Son niveles distintos de las unitarias.
+
+La línea base 0/313 es retrospectiva sobre el commit original addbcaa10645c35cf92caebae286b34ae72fb2e2. npm run test:baseline solo debe ejecutarse en una copia original con hashes coincidentes; se niega a sobrescribir la base si cambió el código. No reemplaza el registro académico original de septiembre.
+
+## Pipeline y ramas
+
+.github/workflows/quality.yml ejecuta compilación, unitarias/cobertura, Sonar y gate, API y despliegue. Los PR ejecutan calidad sin publicación. Los push QA/main publican únicamente después de aprobar. Para demostrarlo en GitHub: Actions → CitaWeb - calidad y despliegue → Run workflow → main. Esta acción puede volver a publicar el mismo commit con el ambiente PROD.
+
+QA y main tienen protección con PR, Calidad CitaWeb, rama actualizada y sin bypass. DEV es integración y no tiene destino cloud configurado; necesita sincronizar los ajustes posteriores antes de nuevos desarrollos. No se entrega revisión de otro integrante; la autorrevisión asistida no la sustituye.
+
+QA y PROD requieren variables VITE_API_URL, BACKEND_HEALTH_URL, VERCEL_ORG_ID y VERCEL_PROJECT_ID; secretos RENDER_DEPLOY_HOOK_URL, RENDER_API_KEY y VERCEL_TOKEN. SONAR_TOKEN se guarda en GitHub. No incluir valores secretos en código o evidencias. El pipeline comprueba destinos y revisión exactos antes de publicar.
+
+Sonar analiza PR y main. Por la limitación de ramas del plan, la promoción QA verifica el gate del PR integrado con contenido idéntico, ejecución aprobada y metadatos exactos. No omite el gate ni lo presenta como análisis nuevo de rama.
+
+## Sonar y carga
+
+Sonar main validado: 0 bugs, 0 vulnerabilidades, 0 code smells y gate OK. Cobertura de código nuevo 85.4 %, global Sonar combinada 62.2 %; no confundir con cobertura Vitest.
+
+La carga en QA evaluó horarios y citas propias a 20 y 50 VUs, incluyendo cinco minutos sostenidos a 50. Cero errores; RNF-01 cumplido en el ensayo de 20. Véanse [resultados](docs/fase2/carga/Resultados.md), [metodología](docs/fase2/carga/Metodologia.md) y [reproducción](tests/load/README.md). Una identidad compartida e historial vacío no representan todas las cargas posibles ni certifican disponibilidad de 99 %.
+
+## Declaración de IA y estado académico
+
+La aplicación original declara generación con ChatGPT en [docs/AI_GENERATION_PROMPT.md](docs/AI_GENERATION_PROMPT.md). Fase 2 utilizó Codex para implementación, diagnóstico, ejecución y documentación bajo instrucciones del autor. El informe declara ese alcance y la responsabilidad de revisión y defensa del estudiante.
+
+El video de Fase 2 está pendiente de grabación/publicación. No se sustituye con el video de Fase 1 ni se afirma cierre académico total. Documentación PDF y paquete final se entregan por la plataforma del curso.

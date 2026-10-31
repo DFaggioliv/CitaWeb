@@ -1,0 +1,98 @@
+{
+  "capturedAt": "2026-10-31T03:19:37.299Z",
+  "scope": "main",
+  "revision": "7dd3b98d6b7579dc87c4727cb639adeae3e5b6a3",
+  "analysis": {
+    "key": "928b5bf5-bbff-41d4-8165-83528950c931",
+    "date": "2026-10-31T03:18:07+0000",
+    "events": [
+      {
+        "key": "AaGP95yNusAIaC0D9EqI",
+        "category": "VERSION",
+        "name": "not provided"
+      }
+    ],
+    "projectVersion": "not provided",
+    "manualNewCodePeriodBaseline": false,
+    "revision": "7dd3b98d6b7579dc87c4727cb639adeae3e5b6a3"
+  },
+  "before": {
+    "bugs": "4",
+    "duplicated_lines_density": "0.0",
+    "code_smells": "1",
+    "vulnerabilities": "2",
+    "sqale_index": "20"
+  },
+  "after": {
+    "coverage": "62.2",
+    "bugs": "0",
+    "duplicated_lines_density": "0.0",
+    "code_smells": "0",
+    "branch_coverage": "62.8",
+    "vulnerabilities": "0",
+    "line_coverage": "61.8",
+    "sqale_index": "0"
+  },
+  "qualityGate": {
+    "status": "OK",
+    "conditions": [
+      {
+        "status": "OK",
+        "metricKey": "new_reliability_rating",
+        "comparator": "GT",
+        "periodIndex": 1,
+        "errorThreshold": "1",
+        "actualValue": "1"
+      },
+      {
+        "status": "OK",
+        "metricKey": "new_security_rating",
+        "comparator": "GT",
+        "periodIndex": 1,
+        "errorThreshold": "1",
+        "actualValue": "1"
+      },
+      {
+        "status": "OK",
+        "metricKey": "new_maintainability_rating",
+        "comparator": "GT",
+        "periodIndex": 1,
+        "errorThreshold": "1",
+        "actualValue": "1"
+      },
+      {
+        "status": "OK",
+        "metricKey": "new_coverage",
+        "comparator": "LT",
+        "periodIndex": 1,
+        "errorThreshold": "80",
+        "actualValue": "85.4"
+      },
+      {
+        "status": "OK",
+        "metricKey": "new_duplicated_lines_density",
+        "comparator": "GT",
+        "periodIndex": 1,
+        "errorThreshold": "3",
+        "actualValue": "0.0"
+      },
+      {
+        "status": "OK",
+        "metricKey": "new_security_hotspots_reviewed",
+        "comparator": "LT",
+        "periodIndex": 1,
+        "errorThreshold": "100",
+        "actualValue": "100.0"
+      }
+    ],
+    "periods": [
+      {
+        "index": 1,
+        "mode": "previous_version",
+        "date": "2026-10-30T21:10:00+0000"
+      }
+    ],
+    "ignoredConditions": false
+  },
+  "openBlockerCritical": 0
+}
