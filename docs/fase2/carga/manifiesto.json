@@ -1,0 +1,20 @@
+{
+  "commit": "fa7f29881aecbc7495b3ae19655fa21be261ccd5",
+  "k6": {
+    "source": "https://github.com/grafana/k6/releases/download/v2.3.0/k6-v2.3.0-windows-amd64.zip",
+    "sha256": "112276d495e5741c968e2bc09ea6196099c1275bd6db9ee0875d173c7148ce43",
+    "version": "v2.3.0"
+  },
+  "files": [
+    {
+      "path": "artifacts/load-rnf20-timeseries.json",
+      "bytes": 9853028,
+      "sha256": "bfef1b3b7b28f060d0c84aa133410f598bd7e92b8304560aadef8819e32e2a0d"
+    },
+    {
+      "path": "artifacts/load-load50-timeseries.json",
+      "bytes": 101223141,
+      "sha256": "4124867556bc2101ac36e1d72059f7520c8489c4329dea4eee9e7d59d771ada4"
+    }
+  ]
+}
